@@ -26,13 +26,15 @@ export const AppContextProvider = ({ children }) => {
     } else {
       document.documentElement.classList.remove("dark");
     }
+
+    localStorage.setItem("theme", theme);
   }, [theme]);
 
   useEffect(() => {
     if (user) {
       fetchUsersChats();
     } else {
-      setChats();
+      setChats([]);
       setSelectedChat(null);
     }
   }, [user]);
@@ -51,6 +53,7 @@ export const AppContextProvider = ({ children }) => {
     selectedChat,
     setSelectedChat,
     theme,
+    setTheme,
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
