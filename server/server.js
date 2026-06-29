@@ -4,6 +4,7 @@ import cors from "cors";
 import connectDB from "./configs/db.js";
 import userRouter from "./routes/user.routes.js";
 import cookieParser from "cookie-parser";
+import chatRouter from "./routes/chat.routes.js";
 
 const app = express();
 await connectDB();
@@ -17,6 +18,7 @@ app.use(cookieParser());
 
 //Routes
 app.use("/api/user", userRouter);
+app.use("/api/chat", chatRouter);
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
