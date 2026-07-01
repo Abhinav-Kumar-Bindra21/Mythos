@@ -86,14 +86,13 @@ export const imageMessageController = async (req, res) => {
       role: "user",
       content: prompt,
       timestamp: Date.now(),
-      isImage: true,
+      isImage: false,
     });
 
     // Encode the prompt
-
     const encodePrompt = encodeURIComponent(prompt);
-    // Construct Imagekit Ai generation URL
 
+    // Construct Imagekit Ai generation URL
     const generatedImageUrl = `${process.env.IMAGEKIT_URL_ENDPOINT}/ik-genimg-prompt-${encodePrompt}/Mythos/${Date.now()}.png?tr=w-800,h-800`;
 
     // Trigger generating by fetching from ImageKit
