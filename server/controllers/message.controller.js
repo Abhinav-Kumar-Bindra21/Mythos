@@ -2,12 +2,13 @@ import imagekit from "../configs/imagekit.js";
 import Chat from "../models/Chat.js";
 import User from "../models/User.js";
 import axios from "axios";
+import openai from "../configs/openai.js";
 
 // Text-based Ai chat message controller
 
 export const textMessageController = async (req, res) => {
   try {
-    const { userId } = req.user._id;
+    const userId = req.user._id;
     //check credits
     if (req.user.credits < 2) {
       return res.status(400).json({ success: false, message: "You don't have enough credits to use this feature" });
@@ -15,7 +16,14 @@ export const textMessageController = async (req, res) => {
 
     const { chatId, prompt } = req.body;
 
-    const chat = await ChatfindOne({ userId, _id: chatId });
+    const chat = await Chat.findOne({ userId, _id: chatId });
+
+    if (!chat) {
+      return res.status(404).json({
+        success: false,
+        message: "Chat not found",
+      });
+    }
 
     chat.messages.push({
       role: "user",
@@ -34,11 +42,11 @@ export const textMessageController = async (req, res) => {
       ],
     });
 
-    const reply = { ...choices[0].message, timestamp: Date.now(), isImage: false };
+    const reply = { content: choices[0].message.content, timestamp: Date.now(), isImage: false };
 
     res.status(200).json({ success: true, reply });
 
-    chat.message.push(reply);
+    chat.messages.push(reply);
     await chat.save();
 
     await User.updateOne({ _id: userId }, { $inc: { credits: -1 } });
@@ -64,6 +72,13 @@ export const imageMessageController = async (req, res) => {
     // find chat
 
     const chat = await Chat.findOne({ userId, _id: chatId });
+
+    if (!chat) {
+      return res.status(404).json({
+        success: false,
+        message: "Chat not found",
+      });
+    }
 
     //push user message
 
